@@ -26,7 +26,7 @@ const usersPut = (req, res) => {
 
     const id = req.params.id;
 
-    console.log(id);
+    console.log("id recibido:",id);
 
     res.json({
         msg: 'put API - controlador',
