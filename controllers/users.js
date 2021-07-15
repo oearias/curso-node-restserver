@@ -1,43 +1,85 @@
 
-const { response} = require('express');
+const { response, request } = require('express');
+const bcryptjs = require('bcryptjs');
 
-const usersGet = (req, res = response) => {
+const User = require('../models/user');
 
-    const query = req.query;
+
+const usersGet = async(req, res = response) => {
+
+    const { limite = 10, desde = 0 } = req.query;
+
+    const query = {status: true}
+
+    //Estas dos promesas funcionan pero toman el doble de tiempo debido al await, termina una y empieza otra
+    /*const users = await User.find(query)
+        .skip(Number(desde))
+        .limit(Number(limite));
+
+    const total = await User.countDocuments(query);*/
+
+    //lo que hacemos en su lugar es un arreglo de promesas
+
+    const [total, users] = await Promise.all([
+        User.countDocuments(query),
+        User.find(query)
+            .skip(Number(desde))
+            .limit(Number(limite))
+    ])
 
     res.json({
-        msg: 'get API - controlador',
-        query
+        total,
+        users
     });
 }
 
-const usersPost = (req, res) => {
+const usersPost = async (req, res) => {
 
-    const {nombre, edad} = req.body;
+    const { nombre, email, password, role } = req.body;
+    const user = new User({ nombre, email, password, role });
+
+    // Encriptar password
+    const salt = bcryptjs.genSaltSync();
+    user.password = bcryptjs.hashSync(password, salt);
+
+    // Guardar en BD
+    await user.save();
 
     res.json({
         msg: 'post API - controlador',
-        nombre,
-        edad
+        user
     });
 }
 
-const usersPut = (req, res) => {
+const usersPut = async(req, res) => {
 
-    const id = req.params.id;
+    const { id } = req.params;
+    const { _id, password, google, email, ...resto } = req.body;
 
-    console.log("id recibido:",id);
+    // TODO validar contra base de datos
+    if (password) {
+        // Encriptar password, esta función se repite así que se puede hacer con un Helper...
+        const salt = bcryptjs.genSaltSync();
+        resto.password = bcryptjs.hashSync(password, salt);
+    }
 
-    res.json({
-        msg: 'put API - controlador',
-        id
-    });
+    const user = await User.findByIdAndUpdate(id, resto)
+
+    console.log("id recibido:", id);
+
+    res.json(user);
 }
 
-const usersDelete = (req, res) => {
-    res.json({
-        msg: 'delete API - controlador'
-    });
+const usersDelete = async(req, res) => {
+
+    const { id } = req.params;
+
+    // Fisicamente borramos el usuario
+    // const user = await User.findByIdAndDelete( id );
+
+    const user = await User.findByIdAndUpdate( id, {status:false});
+
+    res.json(user);
 }
 
 const usersPatch = (req, res) => {
