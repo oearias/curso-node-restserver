@@ -74,12 +74,13 @@ const usersDelete = async(req, res) => {
 
     const { id } = req.params;
 
-    // Fisicamente borramos el usuario
-    // const user = await User.findByIdAndDelete( id );
-
     const user = await User.findByIdAndUpdate( id, {status:false});
 
-    res.json(user);
+    //const userAuntheticated = req.user;
+
+    res.json({
+        msg: "Usuario Borrado",
+        user});
 }
 
 const usersPatch = (req, res) => {
