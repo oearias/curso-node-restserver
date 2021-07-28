@@ -12,7 +12,7 @@ const isAdminRole = (req, res = response, next) => {
 
     if( role !== 'ADMIN_ROLE' ){
         return res.status(401).json({
-            msg: `El usuario ${email} no tiene privilegios suficientes para realizar esta acción`
+            msg: `El usuario ${email} no tiene privilegios suficientes para realizar esta acción, necesita ser ADMIN_ROLE`
         })
     }
 
