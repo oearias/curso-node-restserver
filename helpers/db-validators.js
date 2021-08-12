@@ -39,8 +39,26 @@ const productByIdExists = async (id = '') => {
     if (!existeProducto) {
         throw new Error(`El id: ${id} del producto no existe `)
     }
+
+}
+
+const coleccionesPermitidas = ( coleccion = '', colecciones = []) => {
+
+    const included = colecciones.includes(coleccion);
+
+    if( !included ){
+        throw new Error(`La coleccion ${coleccion} no es permitida, por favor usar solo: ${colecciones}`)
+    }
+
+    return true;
+
 }
 
 module.exports = {
-    isValidRole, emailExists, userByIdExists, categoryByIdExists, productByIdExists
+    isValidRole, 
+    emailExists, 
+    userByIdExists, 
+    categoryByIdExists, 
+    productByIdExists,
+    coleccionesPermitidas
 }
