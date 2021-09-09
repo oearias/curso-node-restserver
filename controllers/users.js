@@ -25,6 +25,7 @@ const usersGet = async(req, res = response) => {
         User.find(query)
             .skip(Number(desde))
             .limit(Number(limite))
+
     ])
 
     res.json({
@@ -33,10 +34,21 @@ const usersGet = async(req, res = response) => {
     });
 }
 
+const userGet = async (req, res = response) => {
+
+    const { id } = req.params;
+
+    const user = await
+        User.findById(id);
+
+    res.json(user);
+}
+
 const usersPost = async (req, res) => {
 
-    const { nombre, email, password, role } = req.body;
-    const user = new User({ nombre, email, password, role });
+    const { nombre, apellido, email, username, password, role, tipo } = req.body;
+    const fullname = nombre+' '+apellido;
+    const user = new User({ nombre, apellido, fullname, username, email, password, role, tipo });
 
     // Encriptar password
     const salt = bcryptjs.genSaltSync();
@@ -54,7 +66,12 @@ const usersPost = async (req, res) => {
 const usersPut = async(req, res) => {
 
     const { id } = req.params;
+
     const { _id, password, google, email, ...resto } = req.body;
+
+    resto.fullname = resto.nombre+' '+resto.apellido; 
+
+    console.log(resto);
 
     // TODO validar contra base de datos
     if (password) {
@@ -63,7 +80,7 @@ const usersPut = async(req, res) => {
         resto.password = bcryptjs.hashSync(password, salt);
     }
 
-    const user = await User.findByIdAndUpdate(id, resto)
+    const user = await User.findByIdAndUpdate(id, resto, { new: true })
 
     console.log("id recibido:", id);
 
@@ -91,6 +108,7 @@ const usersPatch = (req, res) => {
 
 module.exports = {
     usersGet,
+    userGet,
     usersPost,
     usersPut,
     usersDelete,

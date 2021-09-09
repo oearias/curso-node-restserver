@@ -8,6 +8,22 @@ const UserSchema = Schema({
         required: [true, 'El nombre es obigatorio']
     },
 
+    apellido: {
+        type: String
+    },
+
+    fullname: {
+        type: String,
+    },
+
+    apellido: {
+        type: String
+    },
+
+    username: {
+        type: String
+    },
+
     email: {
         type: String,
         required: [true, 'El email es obigatorio'],
@@ -38,11 +54,17 @@ const UserSchema = Schema({
     google: {
         type: Boolean,
         default: false
+    },
+
+    tipo: {
+        type: Number,      //1. User_system 2. User
+        default: 2,
+        required: true   
     }
 });
 
 UserSchema.methods.toJSON = function(){
-    const{ __v, password, _id, ...user } = this.toObject();
+    const{ __v, password, _id, tipo, ...user } = this.toObject();
     user.uid = _id;
     return user;
 }

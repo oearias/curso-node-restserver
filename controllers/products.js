@@ -2,22 +2,24 @@ const { response } = require('express');
 const { mongoose } = require('mongoose');
 
 const { productByIdExists } = require('../helpers/db-validators');
-const { Product, Category } = require('../models');
+const { Product} = require('../models');
 
 const getProducts = async (req, res = response) => {
 
-
-    const { limite = 10, desde = 0 } = req.query;
+    //params de query
+    const { limite = 100, desde = 0 } = req.query;
 
     const query = { status: true }
 
     const [total, products] = await Promise.all([
         Product.countDocuments(query),
         Product.find(query)
-            .populate('user', 'nombre')
+            .populate('user', 'username')
             .populate('category', 'nombre')
-            .skip(Number(desde))
-            .limit(Number(limite))
+            .populate('subcategory', 'nombre')
+            .populate('marca', 'nombre')
+            //.skip(Number(desde))
+            //.limit(Number(limite))
     ])
 
     res.json({
@@ -32,8 +34,10 @@ const getProduct = async (req, res = response) => {
 
     const product = await
         Product.findById(id)
-            .populate('user', 'nombre')
-            .populate('category', 'nombre');
+            .populate('user', 'username')
+            .populate('marca', 'nombre')
+            .populate('category', 'nombre')
+            .populate('subcategory', 'nombre')
 
     res.json(product);
 }
@@ -68,8 +72,6 @@ const createProduct = async (req, res = response) => {
         res.status(201).json(product);
     }
 
-
-
 }
 
 const updateProduct = async (req, res = response) => {
@@ -99,8 +101,9 @@ const deleteProduct = async (req, res = response) => {
 
     const { id } = req.params;
 
-    const product = await Product.findByIdAndUpdate(id,
-        { status: false }, { new: true });
+    //const product = await Product.findByIdAndDelete(id);
+
+    const product = await Product.findByIdAndUpdate(id, {status: false})
 
     //const userAuntheticated = req.user;
 

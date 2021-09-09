@@ -9,7 +9,6 @@ const validarCampos = ( req, res, next) => {
     }
 
     next();
-    
 
 }
 

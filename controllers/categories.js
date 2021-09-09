@@ -10,7 +10,7 @@ const getCategories = async (req, res = response) => {
     const [total, categories] = await Promise.all([
         Category.countDocuments(query),
         Category.find(query)
-            .populate('user', 'nombre')
+            //.populate('user', 'username')
             .skip(Number(desde))
             .limit(Number(limite))
     ])
@@ -27,7 +27,7 @@ const getCategory = async (req, res = response) => {
 
     const category = await
         Category.findById(id)
-            .populate('user', 'nombre')
+            .populate('user', 'username')
 
     res.json(category);
 }
@@ -58,8 +58,6 @@ const createCategory = async (req, res = response) => {
         res.status(201).json(category);
     }
 
-
-
 }
 
 const updateCategory = async (req, res = response) => {
@@ -75,8 +73,6 @@ const updateCategory = async (req, res = response) => {
         Category.findByIdAndUpdate(id, data, { new: true })   //new true: sirve para devolver siempre el documento actualizado
             .populate('user', 'nombre');
 
-    console.log("id recibido:", id);
-
     res.json(category);
 }
 
@@ -84,10 +80,7 @@ const deleteCategory = async (req, res = response) => {
 
     const { id } = req.params;
 
-    const category = await Category.findByIdAndUpdate(id,
-        { status: false }, { new: true });
-
-    //const userAuntheticated = req.user;
+    const category = await Category.findByIdAndDelete(id);
 
     res.json({
         msg: "Categoría Borrada",

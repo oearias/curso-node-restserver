@@ -8,6 +8,10 @@ const ProductSchema = Schema({
         unique: true
     },
 
+    sku: {
+        type: String,
+    },
+
     status : {
         type: Boolean,
         default: true,
@@ -20,9 +24,19 @@ const ProductSchema = Schema({
         required: true
     },
 
-    precio: {
+    cantidad:{
         type: Number,
         default: 0
+    },
+
+    oferta: {
+        type: Number,
+        default: 0
+    },
+
+    ofetaEnabled: {
+        type: Boolean,
+        default: false
     },
 
     category: {
@@ -31,13 +45,41 @@ const ProductSchema = Schema({
         required: true
     },
 
+    marca: {
+        type: Schema.Types.ObjectId,
+        ref: 'Marca',
+        required: true
+    },
+
     descripcion: {
         type: String
     },
 
-    disponible: {
-        type: Boolean,
-        default: true
+    stock: {
+        type: Number,
+        default: 0
+    },
+
+    precio: {
+        type: Number,
+        default: 0
+    },
+
+    costo: {
+        type: Number,
+        default: 0
+    },
+
+    talla: {
+        type: String
+    },
+
+    color: {
+        type: String
+    },
+
+    vendido: {
+        type: Number
     },
 
     img: {

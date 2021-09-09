@@ -1,6 +1,6 @@
 const {Schema, model} = require('mongoose');
 
-const CategorySchema = Schema({
+const SubcategorySchema = Schema({
 
     nombre: {
         type: String,
@@ -14,16 +14,17 @@ const CategorySchema = Schema({
         required: true
     },
 
-    user: {
+    category: {
         type: Schema.Types.ObjectId,
-        ref: 'User',
+        ref: 'Category',
         required: true
     }
+
 });
 
-CategorySchema.methods.toJSON = function(){
-    const{ __v, status, user, ...data } = this.toObject();
+SubcategorySchema.methods.toJSON = function(){
+    const{ __v, status, ...data } = this.toObject();
     return data;
 }
 
-module.exports = model( 'Category', CategorySchema );
+module.exports = model( 'Subcategory', SubcategorySchema );

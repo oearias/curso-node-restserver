@@ -1,9 +1,10 @@
 const { response } = require('express');
 const { ObjectId } = require('mongoose').Types;
-const { User, Category, Product } = require('../models');
+const { User, Category, Product, Client } = require('../models');
 
 const coleccionesPermitidas = [
     'users',
+    'clients',
     'categories',
     'products',
     'productsByCategory',
@@ -32,6 +33,31 @@ const buscarUsuarios = async (termino = '', res = response) => {
 
     res.json({
         results: users
+    });
+}
+
+const buscarClientes = async (termino = '', res = response) => {
+
+    const isMongoId = ObjectId.isValid(termino); //true
+
+    if (isMongoId) {
+        const client = await Client.findById(termino);
+        return res.json({
+            results: (client) ? [client] : []
+        });
+    }
+
+    const regex = new RegExp(termino, 'i')
+
+    const clients = await Client.find(
+        {
+            $or: [{ nombre: regex }, { email: regex }, { rfc: regex }],
+            $and: [{ status: true }]
+        }
+    );
+
+    res.json({
+        results: clients
     });
 }
 
@@ -144,6 +170,10 @@ const buscar = (req, res = response) => {
 
         case 'users':
             buscarUsuarios(termino, res);
+            break;
+
+        case 'clients':
+            buscarClientes(termino, res);
             break;
 
         default:

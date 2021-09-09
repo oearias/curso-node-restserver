@@ -1,4 +1,4 @@
-const { Category, Product, Role, User } = require('../models');
+const { Category, Product, Role, User, Marca, Subcategory, Status, Order, Numorder, Pedidoactivity, Client } = require('../models');
 
 
 const isValidRole = async (role = '') => {
@@ -17,10 +17,26 @@ const emailExists = async (email = '') => {
     }
 }
 
+const emailExistsC = async (email = '') => {
+    const existeEmail = await Client.findOne({ email });
+
+    if (existeEmail) {
+        throw new Error(`El correo: ${email} ya se encuentra registrado `);
+    }
+}
+
 const userByIdExists = async (id = '') => {
     const existeUsuario = await User.findById(id);
 
     if (!existeUsuario) {
+        throw new Error(`El id: ${id} no existe `);
+    }
+}
+
+const clientByIdExists = async (id = '') => {
+    const existeCliente = await Client.findById(id);
+
+    if (!existeCliente) {
         throw new Error(`El id: ${id} no existe `);
     }
 }
@@ -33,6 +49,22 @@ const categoryByIdExists = async (id = '') => {
     }
 }
 
+const subcategoryByIdExists = async (id = '') => {
+    const existeSubcategoria = await Subcategory.findById(id);
+
+    if (!existeSubcategoria) {
+        throw new Error(`El id: ${id} de la subcategoría no existe `)
+    }
+}
+
+const brandByIdExists = async (id = '') => {
+    const existeMarca = await Marca.findById(id);
+
+    if (!existeMarca) {
+        throw new Error(`El id: ${id} de la marca no existe `)
+    }
+}
+
 const productByIdExists = async (id = '') => {
     const existeProducto = await Product.findById(id);
 
@@ -40,6 +72,22 @@ const productByIdExists = async (id = '') => {
         throw new Error(`El id: ${id} del producto no existe `)
     }
 
+}
+
+const orderByIdExists = async (id = '') => {
+    const existeOrden = await Order.findById(id);
+
+    if (!existeOrden) {
+        throw new Error(`El id: ${id} de la orden no existe `)
+    }
+}
+
+const activityByIdExists = async (id = '') => {
+    const existeAct = await Pedidoactivity.findById(id);
+
+    if (!existeAct) {
+        throw new Error(`El id: ${id} de la actividad no existe `)
+    }
 }
 
 const coleccionesPermitidas = ( coleccion = '', colecciones = []) => {
@@ -51,14 +99,47 @@ const coleccionesPermitidas = ( coleccion = '', colecciones = []) => {
     }
 
     return true;
+}
 
+const generaNumOrden = async() => {
+
+    let numOrden;
+
+    const ultimo = await Numorder.find().sort({$natural:-1}).limit(1);
+
+    if(ultimo.length > 0){
+        numOrden = Number(ultimo[0].numero + 1);
+    }else{
+        numOrden = 1
+    }
+
+
+    return Number(numOrden);
+
+}
+
+const statusByIdExists = async (id = '') => { 
+
+    const existeStatus = await Status.findById(id);
+
+    if (!existeStatus) {
+        throw new Error(`El id: ${id} del status no existe `)
+    }
 }
 
 module.exports = {
     isValidRole, 
     emailExists, 
-    userByIdExists, 
+    emailExistsC,
+    brandByIdExists, 
     categoryByIdExists, 
+    clientByIdExists,
+    orderByIdExists,
     productByIdExists,
-    coleccionesPermitidas
+    subcategoryByIdExists,
+    statusByIdExists,
+    userByIdExists, 
+    activityByIdExists,
+    coleccionesPermitidas,
+    generaNumOrden
 }

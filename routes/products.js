@@ -1,8 +1,7 @@
 const { Router } = require('express');
 const { check } = require('express-validator');
-const { login, googleSignin } = require('../controllers/auth');
 const { getProduct, getProducts, createProduct, updateProduct, deleteProduct } = require('../controllers/products');
-const { productByIdExists } = require('../helpers/db-validators');
+const { productByIdExists, categoryByIdExists, brandByIdExists } = require('../helpers/db-validators');
 const { validarJWT, validarCampos, isAdminRole } = require('../middlewares');
 
 const router = Router();
@@ -22,6 +21,10 @@ router.post('/', [
     check('nombre', 'El nombre es obligatorio').not().isEmpty(),
     check('category', 'La categoría es obligatoria').not().isEmpty(),
     check('category', 'No es un id válido el de la categoría').isMongoId(),
+    check('category').custom(categoryByIdExists),
+    check('marca', 'La marca es obligatoria').not().isEmpty(),
+    check('marca', 'No es un id válido el de la marca').isMongoId(),
+    check('marca').custom(brandByIdExists),
     validarCampos
 ], createProduct)
 
